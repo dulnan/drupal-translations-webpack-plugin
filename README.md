@@ -15,8 +15,9 @@ plugins: [
 ]
 ```
 
-You can use both translation functions everywhere, but you need to tell
-webpack that Drupal is a global object:
+You can use both translation functions everywhere. But *maybe* you need to declare
+that Drupal is a global object. It worked for me without, in another project it
+didn't.
 
 *webpack.config.js*
 ```javascript
