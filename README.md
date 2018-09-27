@@ -39,3 +39,7 @@ It's important that you use the functions like normal, e.g. not write `window.Dr
 or otherwise wrap them in your own function, etc. The plugin is rather "dumb"; it will
 just go through all JS files and parse out the actual "string" where the function is
 called.
+
+For a detailled example on how to use this plugin, check out this Drupal webpack example:
+
+https://github.com/dulnan/drupal-webpack-setup-example
