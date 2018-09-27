@@ -9,15 +9,14 @@ and run its regex over it, so that those translations end up in the Frontend.
 ## Add the plugin to your webpack config
 ```javascript
 plugins: [
-  new ExtractDrupalTranslationsPlugin({
+  new DrupalTranslationsWebpackPlugin({
     output: 'drupal-translations.js'
   })
 ]
 ```
 
-## Use the functions everywhere
-You can use both translations functions everywhere, but you need to tell
-webpack that these are global objects:
+You can use both translation functions everywhere, but you need to tell
+webpack that Drupal is a global object:
 
 *webpack.config.js*
 ```javascript
@@ -26,7 +25,7 @@ new webpack.ProvidePlugin({
 })
 ```
 
-Also, if you use ESLint, you want to declare Drupal a global:
+Also, if you use ESLint, you want to declare Drupal a global object:
 
 *.eslintrc.js*
 ```javascript

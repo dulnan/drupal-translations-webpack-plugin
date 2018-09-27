@@ -9,9 +9,9 @@
 const ConstDependency = require('webpack/lib/dependencies/ConstDependency')
 const NullFactory = require('webpack/lib/NullFactory')
 
-const PLUGIN = 'ExtractDrupalTranslationsPlugin'
+const PLUGIN = 'DrupalTranslationsWebpackPlugin'
 
-class ExtractDrupalTranslationsPlugin {
+class DrupalTranslationsWebpackPlugin {
   constructor (options) {
     options = options || {}
     this.output = options.output || 'drupalTranslations.js'
@@ -24,7 +24,8 @@ class ExtractDrupalTranslationsPlugin {
     var functionCalls = []
     var output = this.output
 
-    // Tap into the compilation hook and announce we're coming.
+    // Tap into the compilation hook and create a new "normalModuleFactory" which we can
+    // tap into.
     compiler.hooks.compilation.tap(PLUGIN, (compilation) => {
       compilation.dependencyFactories.set(ConstDependency, new NullFactory())
       compilation.dependencyTemplates.set(ConstDependency, new ConstDependency.Template())
@@ -32,30 +33,23 @@ class ExtractDrupalTranslationsPlugin {
 
     // Now tap again into someting.
     compiler.hooks.normalModuleFactory.tap(PLUGIN, (factory) => {
-
       // More tapping, now in the parser, for javascript files!
       factory.hooks.parser.for('javascript/auto').tap(PLUGIN, (parser) => {
-
         // And now tap into calling the Drupal.t functions.
         parser.hooks.call.for('Drupal.t').tap(PLUGIN, (expression) => {
-
-          // Let's evaluate the first argument of the Drupal.t call: Drupal.t(X, __, __)
-          const translationKey = parser.evaluateExpression(expression.arguments[0])
-
-          // If this is non-existing or not a string, return.
-          if (!translationKey || !translationKey.string || typeof translationKey.string !== 'string') {
-            return false
+          const expressionString = getExpressionInSource(expression, parser)
+          if (expressionString) {
+            functionCalls.push(expressionString)
           }
+          return false
+        })
 
-          // Find out where the function call is located.
-          const start = expression.range[0]
-          const end = expression.range[1]
-
-          // Slice out the whole call from the source file.
-          const functionCall = parser.state.current._source._value.slice(start, end)
-
-          functionCalls.push(functionCall)
-
+        // Tap tap for Drupal.formatPlural
+        parser.hooks.call.for('Drupal.formatPlural').tap(PLUGIN, (expression) => {
+          const expressionString = getExpressionInSource(expression, parser)
+          if (expressionString) {
+            functionCalls.push(expressionString)
+          }
           return false
         })
       })
@@ -87,6 +81,22 @@ class ExtractDrupalTranslationsPlugin {
 }
 
 /**
+ * Extract, based on the range of the expression, the complete string of the
+ * function call in the source file.
+ * 
+ * @param {Expression} expression The parsed expression
+ * @param {Parser} parser The webpack parser
+ */
+function getExpressionInSource (expression, parser) {
+  // Find out where the function call is located.
+  const start = expression.range[0]
+  const end = expression.range[1]
+
+  // Slice out the whole call from the source file.
+  return parser.state.current._source._value.slice(start, end)
+}
+
+/**
  * Generate the contents of the file with all function calls for Drupal.
  *
  * @param {String} content All the function calls to Drupal.t and Drupal.formatPlural
@@ -103,4 +113,4 @@ function ${PLUGIN} () {
 `
 }
 
-module.exports = ExtractDrupalTranslationsPlugin
+module.exports = DrupalTranslationsWebpackPlugin
