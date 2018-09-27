@@ -1,0 +1,32 @@
+{
+  "name": "drupal-translations-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Extract Drupal.t and Drupal.formatPlural translations from your webpack builds.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dulnan/drupal-translations-webpack-plugin.git"
+  },
+  "keywords": [
+    "drupal",
+    "translations",
+    "drupalt",
+    "webpack",
+    "extract",
+    "parse",
+    "strings"
+  ],
+  "author": "Jan Hug",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dulnan/drupal-translations-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/dulnan/drupal-translations-webpack-plugin#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.20.2"
+  }
+}
