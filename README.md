@@ -5,9 +5,21 @@ The plugin will gather all those calls in one single file and emit them.
 Then you can add this file to your Drupal theme library. Drupal will pick it up
 and run its regex over it, so that those translations end up in the Frontend.
 
+Compatible with Webpack 4 and 5.
+
+# Install
+
+The plugin is available on npm:
+
+```
+npm install --save-dev drupal-translations-webpack-plugin
+```
+
 # How to use
 ## Add the plugin to your webpack config
 ```javascript
+const DrupalTranslationsWebpackPlugin = require('drupal-translations-webpack-plugin')
+
 plugins: [
   new DrupalTranslationsWebpackPlugin({
     output: 'drupal-translations.js'
@@ -21,9 +33,11 @@ didn't.
 
 *webpack.config.js*
 ```javascript
-new webpack.ProvidePlugin({
-  'Drupal': 'window.Drupal'
-})
+plugins: [
+  new webpack.ProvidePlugin({
+    'Drupal': 'window.Drupal'
+  })
+]
 ```
 
 Also, if you use ESLint, you want to declare Drupal a global object:
