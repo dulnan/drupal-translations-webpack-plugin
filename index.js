@@ -93,7 +93,10 @@ function getExpressionInSource (expression, parser) {
   const end = expression.range[1]
 
   // Slice out the whole call from the source file.
-  return parser.state.current._source._value.slice(start, end)
+  const value = parser.state.current._source._value || parser.state.current._source._valueAsString
+  if (value && typeof value === 'string') {
+    return value.slice(start, end)
+  }
 }
 
 /**
