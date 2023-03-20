@@ -6,6 +6,8 @@
  *
  */
 
+const fs = require('fs');
+const path = require('node:path');
 const ConstDependency = require('webpack/lib/dependencies/ConstDependency')
 const NullFactory = require('webpack/lib/NullFactory')
 
@@ -64,15 +66,9 @@ class DrupalTranslationsWebpackPlugin {
 
       const content = fileOutput(functionCallsString)
 
-      // Attach our translations file to the compilation assets.
-      compilation.assets[output] = {
-        source: () => {
-          return content
-        },
-        size: () => {
-          return content.length
-        }
-      }
+      // Write our translation file.
+      const outputPath = compilation.compiler.outputPath
+      fs.writeFileSync(path.join(outputPath, output), content);
 
       // Done!
       callback()
