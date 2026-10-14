@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/dulnan/drupal-translations-webpack-plugin#readme",
   "peerDependencies": {
-    "webpack": ">=4.20.2 <6.0.0"
+    "webpack": "^5.0.0"
   }
 }

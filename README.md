@@ -5,7 +5,7 @@ The plugin will gather all those calls in one single file and emit them.
 Then you can add this file to your Drupal theme library. Drupal will pick it up
 and run its regex over it, so that those translations end up in the Frontend.
 
-Compatible with Webpack 4 and 5.
+Compatible with Webpack 5.
 
 # Install
 

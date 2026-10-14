@@ -55,27 +55,30 @@ class DrupalTranslationsWebpackPlugin {
       })
     })
 
-    // Tap into the emit hook. Happens when all compilation is over and files are written to disk.
-    compiler.hooks.emit.tapAsync(PLUGIN, (compilation, callback) => {
-      // Remove all newlines from the function calls. Then join the array with new lines and two spaces.
+    // Remove all newlines from the function calls. Then join the array with new lines and two spaces.
+    const getContent = () => {
       const functionCallsString = functionCalls.map(f => {
         return f.replace(/(\r\n\t|\n|\r\t)/gm, '')
       }).join('\n  ')
 
-      const content = fileOutput(functionCallsString)
+      return fileOutput(functionCallsString)
+    }
 
-      // Attach our translations file to the compilation assets.
-      compilation.assets[output] = {
-        source: () => {
-          return content
-        },
-        size: () => {
-          return content.length
-        }
-      }
+    const { Compilation, sources } = compiler.webpack
 
-      // Done!
-      callback()
+    // Assets must be added during the processAssets hook, as
+    // compilation.assets is frozen once the compilation is sealed.
+    compiler.hooks.thisCompilation.tap(PLUGIN, (compilation) => {
+      compilation.hooks.processAssets.tap({
+        name: PLUGIN,
+        stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL
+      }, () => {
+        // Mark the file as minimized, so that minimizers leave it untouched.
+        // Drupal is unable to parse the function calls in minified code.
+        compilation.emitAsset(output, new sources.RawSource(getContent()), {
+          minimized: true
+        })
+      })
     })
   }
 }
